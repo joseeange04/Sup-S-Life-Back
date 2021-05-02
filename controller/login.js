@@ -17,7 +17,7 @@ module.exports = {
                     bcrypt.hash(mdp1, saltRounds, function(err, hash) {
                         db.query("INSERT INTO etudiant(nom, prenom, appelation, foyer, email, promotion, mdp) VALUES(?,?,?,?,?,?,?)", [nom, prenom, appelation, foyer, email, promotion, hash], function(err){
                             if(err) return res.status(500).send("Erreur: ressource");
-                            res.send("Bien enregistré !");
+                            res.send("Etudiant Bien enregistré !");
                         })
                     });
                 }
@@ -32,6 +32,8 @@ module.exports = {
         if(email){
             connexion.then(function(db){
                 db.query("SELECT * FROM "+table+" where email = ?", [email], function(err, resultats){
+                    console.log(resultats);
+
                     if(err) res.status(500).send("Erreur: ressource");
                     if(resultats.length == 1){
                         bcrypt.compare(mdp, resultats[0].mdp, function(err, result) {
@@ -52,6 +54,27 @@ module.exports = {
         else{
             res.send("Aucun adresse email");
         }
+    },
+
+    r_register:function(req, res){
+        console.log("==> POST REGISTER REF");
+        var donnee = req.body;
+        var nom = donnee.name, prenom = donnee.fname, appelation = donnee.aname, email = donnee.email, phone = donnee.phone, mdp1 = donnee.pass, mdp2 = donnee.re_pass;
+        connexion.then(function(db){
+            service.inscrire(email, mdp1, mdp2, "referant", db).then(function(verification){
+                if(verification !== true){
+                    res.status(403).send(verification);
+                }
+                else{
+                    bcrypt.hash(mdp1, saltRounds, function(err, hash){
+                        db.query("INSERT INTO referant(nom, prenom, appelation, email, tel, mdp) VALUES (?,?,?,?,?,?)", [nom, prenom, appelation, email, phone, hash], function(err){
+                            if(err) return res.status(500).send("Erreur: ressource");
+                            res.send("Référant Bien enregistré!");
+                        })
+                    });
+                }
+            })
+        });
     }
     
 }
