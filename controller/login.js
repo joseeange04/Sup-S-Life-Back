@@ -57,7 +57,7 @@ module.exports = {
     },
 
     r_register:function(req, res){
-        console.log("==> POST REGISTER REF");
+        console.log("==> POST REGISTER REFERANT");
         var donnee = req.body;
         var nom = donnee.name, prenom = donnee.fname, appelation = donnee.aname, email = donnee.email, phone = donnee.phone, mdp1 = donnee.pass, mdp2 = donnee.re_pass;
         connexion.then(function(db){
@@ -69,7 +69,7 @@ module.exports = {
                     bcrypt.hash(mdp1, saltRounds, function(err, hash){
                         db.query("INSERT INTO referant(nom, prenom, appelation, email, tel, mdp) VALUES (?,?,?,?,?,?)", [nom, prenom, appelation, email, phone, hash], function(err){
                             if(err) return res.status(500).send("Erreur: ressource");
-                            res.send("Référant Bien enregistré!");
+                            res.send("Référant bien enregistré!");
                         })
                     });
                 }
